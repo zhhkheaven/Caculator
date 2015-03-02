@@ -13,6 +13,7 @@ public class simpleCaculator extends Activity {
 	private TextView textView = null;// 显示区域
 	private Button btnClear = null; // clear按钮
 	private Button btnDel = null;// del 按钮
+	private Button btnSwitchAddAndSubtract = null; // 切换加减
 	private String lastCommand; // 用于保存运算符
 	private boolean clearFlag; // 用于判断是否清空显示区域的值,true需要,false不需要
 	private boolean firstFlag; // 用于判断是否是首次输入,true首次,false不是首次
@@ -93,6 +94,31 @@ public class simpleCaculator extends Activity {
 				textView.setText(currentStr);
 			}
 		});
+		btnSwitchAddAndSubtract = (Button) findViewById(R.id.buttonNegSign);
+		btnSwitchAddAndSubtract.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				String currentStr = textView.getText().toString();
+				// 对于计算来说只要加上负号就可以了但是要是显示应该做一些处理
+				if(currentStr.equals("0.0"))
+					return;
+				currentStr = "-" + currentStr;
+				String[] strArray = currentStr.split("-");
+				// 减号标志 true表示带有减号false表示不带减号
+				boolean minusFlag = minusSignDeal(strArray.length - 1);
+				if (minusFlag)
+					textView.setText("-" + strArray[strArray.length - 1]);
+				else
+					textView.setText(strArray[strArray.length - 1]);
+			}
+		});
+	}
+
+	public boolean minusSignDeal(int minusSignLength) {
+		if (minusSignLength % 2 == 0)
+			return false;
+		else
+			return true;
 	}
 
 	// 数字按钮监听器
@@ -148,6 +174,7 @@ public class simpleCaculator extends Activity {
 				}
 			} else {
 				if (!clearFlag) {// 如果flag=false不需要清空显示区的值,就调用方法计算
+					// 将值都保存到result中留着下次进行运算,但是这样只能够进行一次运算
 					calculate(Double.parseDouble(textView.getText().toString()));// 保存显示区域的值,并计算
 				}
 				// 保存你点击的运算符
@@ -171,6 +198,7 @@ public class simpleCaculator extends Activity {
 		} else if (lastCommand.equals("=")) {
 			result = x;
 		}
+		//因为setText输入只能是字符串所以要加用 ""+result
 		textView.setText("" + result);
 	}
 }
